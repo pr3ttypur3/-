@@ -995,7 +995,7 @@
 
    <!-- Community -->
 <section class="section" aria-label="Join the community">
-  <div class="container section\_\_inner">
+  <div class="container section__inner">
     <h2 class="h2">Join the Community</h2>
 
     <div style="margin-top:14px;">
@@ -1022,6 +1022,47 @@
   </main>
 
   <script>
+    // #region agent log
+    document.addEventListener("DOMContentLoaded", function agentDomProbe() {
+      var main = document.getElementById("main");
+      var comm = document.querySelector('section[aria-label="Join the community"]');
+      var commContainer = comm && comm.querySelector(":scope > div.container");
+      var footer = document.querySelector("footer.footer");
+      var payload = {
+        sessionId: "43fb52",
+        runId: "pre-fix",
+        hypothesisId: "H1-H4",
+        location: "index.html:DOMContentLoaded",
+        message: "DOM structure probe",
+        data: {
+          H1_communityContainerClass: commContainer ? commContainer.className : null,
+          H1_hasSectionInnerToken: commContainer ? commContainer.classList.contains("section__inner") : null,
+          H2_mainDirectChildCount: main ? main.children.length : null,
+          H2_mainDirectChildSummary: main
+            ? Array.prototype.map.call(main.children, function (n) {
+                return n.tagName + (n.className ? "#" + String(n.className).slice(0, 40) : "");
+              })
+            : null,
+          H2_footerParentTag: footer && footer.parentElement ? footer.parentElement.tagName : null,
+          H2_footerInsideMain: footer && main ? main.contains(footer) : null,
+          H3_scriptAfterMainSiblings: (function () {
+            var s = document.currentScript;
+            return s && s.previousElementSibling ? s.previousElementSibling.tagName : null;
+          })(),
+          H4_yearExists: !!document.getElementById("year"),
+          H4_connectBtn: !!document.getElementById("connectWalletBtn"),
+          H4_walletStatus: !!document.getElementById("walletStatus")
+        },
+        timestamp: Date.now()
+      };
+      fetch("http://127.0.0.1:7726/ingest/77b1c0b1-f079-4510-8237-bba430ea3c70", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "43fb52" },
+        body: JSON.stringify(payload)
+      }).catch(function () {});
+    });
+    // #endregion
+
     const connectWalletBtn = document.getElementById("connectWalletBtn");
     const heroConnectWalletBtn = document.getElementById("heroConnectWalletBtn");
     const walletStatus = document.getElementById("walletStatus");
@@ -1029,6 +1070,21 @@
     const setStatus = (msg) => { walletStatus.textContent = msg; };
 
     async function connectWallet() {
+      // #region agent log
+      fetch("http://127.0.0.1:7726/ingest/77b1c0b1-f079-4510-8237-bba430ea3c70", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-Debug-Session-Id": "43fb52" },
+        body: JSON.stringify({
+          sessionId: "43fb52",
+          runId: "pre-fix",
+          hypothesisId: "H5",
+          location: "index.html:connectWallet",
+          message: "connectWallet invoked",
+          data: { hasEthereum: !!window.ethereum },
+          timestamp: Date.now()
+        })
+      }).catch(function () {});
+      // #endregion
       try {
         setStatus("Checking wallet provider...");
         if (!window.ethereum) {
